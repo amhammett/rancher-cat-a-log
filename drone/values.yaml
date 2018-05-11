@@ -1,0 +1,67 @@
+appVersion: 0.8.0
+
+images:
+  server:
+    repository: "docker.io/drone/drone"
+    tag: 0.8.4
+    pullPolicy: IfNotPresent
+
+  agent:
+    repository: "docker.io/drone/agent"
+    tag: 0.8.4
+    pullPolicy: IfNotPresent
+
+  dind:
+    repository: "docker.io/library/docker"
+    tag: 17.12.0-ce-dind
+    pullPolicy: IfNotPresent
+
+service:
+  httpPort: 80
+  type: ClusterIP
+
+ingress:
+  enabled: false
+
+server:
+  env:
+    DRONE_DEBUG: "false"
+    DRONE_DATABASE_DRIVER: "sqlite3"
+    DRONE_DATABASE_DATASOURCE: "/var/lib/drone/drone.sqlite"
+
+  envSecrets:
+    drone-server-secrets:
+      - DRONE_GITHUB_SECRET
+
+  annotations: {}
+  resources: {}
+  affinity: {}
+
+agent:
+  env:
+    DRONE_DEBUG: "false"
+
+  replicas: 1
+
+  annotations: {}
+  resources: {}
+  affinity: {}
+
+dind:
+  enabled: true
+  driver: overlay2
+
+  resources: {}
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 1Gi
+
+rbac:
+  create: true
+  apiVersion: v1
+
+serviceAccount:
+  create: true
+  name:
